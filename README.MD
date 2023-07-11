@@ -99,4 +99,4 @@ pip install -U transformers>=4.30 deepspeed xformers==0.0.20 bitsandbytes>=0.39 
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=ssbuild/baicuan_finetuning&type=Date)](https://star-history.com/#ssbuild/baichuan_finetuning&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=ssbuild/baicuan2_finetuning&type=Date)](https://star-history.com/#ssbuild/baichuan2_finetuning&Date)
