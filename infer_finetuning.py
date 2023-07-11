@@ -21,7 +21,7 @@ if __name__ == '__main__':
                                                             tokenizer_class_name=BaichuanTokenizer,)
 
 
-    config = AutoConfig.from_pretrained('./best_ckpt')
+    config = BaichuanConfig.from_pretrained('./best_ckpt')
     pl_model = MyTransformer(config=config, model_args=model_args,torch_dtype=torch.float16,)
 
     # deepspeed 权重使用转换脚本命令

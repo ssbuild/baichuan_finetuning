@@ -22,7 +22,7 @@ if __name__ == '__main__':
                                                               tokenizer_class_name=BaichuanTokenizer, )
 
     train_weight_dir = './best_ckpt/last'
-    config = AutoConfig.from_pretrained(train_weight_dir)
+    config = BaichuanConfig.from_pretrained(train_weight_dir)
     prompt_args = PromptArguments.from_pretrained(train_weight_dir)
 
     assert prompt_args.inference_mode == True
