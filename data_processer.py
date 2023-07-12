@@ -39,8 +39,9 @@ class TokenUnSupervision:
     def process(cls, tokenizer: PreTrainedTokenizer,config,stride, max_seq_length, examples):
         input_ids_all = []
         for idx, (question, answer) in enumerate(examples):
-            text = question + answer
-            ids = tokenizer.encode(text=text)
+            a_ids = [195] + tokenizer.encode(text=question,add_special_tokens=False)
+            b_ids = [196] + tokenizer.encode(text=answer) + [config.eos_token_id]
+            ids = a_ids + b_ids
             if len(ids) <= 3:
                 continue
             input_ids_all += ids
@@ -66,15 +67,15 @@ class TokenSupervision:
     def process(cls, tokenizer: PreTrainedTokenizer,config,stride, max_seq_length, examples):
         ds = []
         for idx, (question, answer) in enumerate(examples):
-            a_ids = tokenizer.encode(text=question,add_special_tokens=False)[:max_seq_length-3]
-            b_ids = tokenizer.encode(text=answer)
+            a_ids = [195] + tokenizer.encode(text=question,add_special_tokens=False)[:max_seq_length-6]
+            b_ids = [196] + tokenizer.encode(text=answer) + [config.eos_token_id]
             assert len(b_ids)
             input_ids_all = a_ids + b_ids
             labels_all = [-100] * len(a_ids) + b_ids
             pos = 0
             while pos < len(input_ids_all):
-                input_ids = [config.bos_token_id] + input_ids_all[pos: pos + max_seq_length - 1]
-                labels = [config.bos_token_id] + labels_all[pos: pos + max_seq_length - 1]
+                input_ids = [config.bos_token_id] + input_ids_all[pos: pos + max_seq_length-1]
+                labels = [config.bos_token_id] + labels_all[pos: pos + max_seq_length-1]
                 pos += stride
                 d = TokenIdsFinal.process(tokenizer, input_ids, labels, max_seq_length)
                 ds.append(d)
@@ -92,8 +93,8 @@ class TokenSupervisionRounds:
                 a_text = prompt_text + "[Round {}]\n问：{}\n答：".format(idx, question)
 
             prompt_text += "[Round {}]\n问：{}\n答：{}".format(idx, question, answer)
-            a_ids = tokenizer.encode(text=a_text,add_special_tokens=False)[:max_seq_length-3]
-            b_ids = tokenizer.encode(text=answer)
+            a_ids = [195] +tokenizer.encode(text=a_text,add_special_tokens=False)[:max_seq_length-6]
+            b_ids = [196] +tokenizer.encode(text=answer) + [config.eos_token_id]
 
 
             assert len(b_ids)
