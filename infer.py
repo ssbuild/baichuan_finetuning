@@ -43,10 +43,11 @@ if __name__ == '__main__':
 
     for input in text_list:
         messages = build_messages(input)
-        generation_config = GenerationConfig(eos_token_id=config.eos_token_id,
-                              pad_token_id=config.eos_token_id,
-                              do_sample=True, top_k=5, top_p=0.85, temperature=0.3,
-                              repetition_penalty=1.1,)
+        generation_config = GenerationConfig(max_new_tokens=512,
+                                             eos_token_id=config.eos_token_id,
+                                             pad_token_id=config.eos_token_id,
+                                             do_sample=True, top_k=5, top_p=0.85, temperature=0.3,
+                                             repetition_penalty=1.1,)
         response = model.chat(tokenizer, messages=messages,generation_config=generation_config )
         print('input',input)
         print('output',response)
