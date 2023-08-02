@@ -4,8 +4,8 @@
 import os
 import torch
 from deep_training.data_helper import ModelArguments, DataArguments
-from transformers import HfArgumentParser,AutoConfig
-from data_utils import train_info_args, NN_DataHelper,global_args
+from transformers import HfArgumentParser, AutoConfig, GenerationConfig
+from data_utils import train_info_args, NN_DataHelper, global_args, build_messages
 from aigc_zoo.model_zoo.baichuan2.llm_model import MyTransformer,LoraArguments,\
     PromptArguments,BaichuanConfig,BaichuanTokenizer,LoraModel
 from aigc_zoo.utils.llm_generate import Generate
@@ -58,9 +58,12 @@ if __name__ == '__main__':
     with lora_model.disable_adapter():
         for input in text_list:
             # lora_model 调用子对象方法
-            response = Generate.generate(lora_model, query=input, tokenizer=tokenizer, max_length=512,
-                                         eos_token_id=config.eos_token_id, pad_token_id=config.eos_token_id,
-                                         do_sample=False, top_p=0.7, temperature=0.95, )
+            messages = build_messages(input)
+            generation_config = GenerationConfig(eos_token_id=config.eos_token_id,
+                                                 pad_token_id=config.eos_token_id,
+                                                 do_sample=True, top_k=5, top_p=0.85, temperature=0.3,
+                                                 repetition_penalty=1.1, )
+            response = lora_model.chat(tokenizer, messages=messages, generation_config=generation_config)
             print('input', input)
             print('output', response)
 
@@ -68,8 +71,11 @@ if __name__ == '__main__':
 
     for input in text_list:
         # lora_model 调用子对象方法
-        response = Generate.generate(lora_model, query=input, tokenizer=tokenizer, max_length=512,
-                                     eos_token_id=config.eos_token_id, pad_token_id=config.eos_token_id,
-                                     do_sample=False, top_p=0.7, temperature=0.95, )
+        messages = build_messages(input)
+        generation_config = GenerationConfig(eos_token_id=config.eos_token_id,
+                                             pad_token_id=config.eos_token_id,
+                                             do_sample=True, top_k=5, top_p=0.85, temperature=0.3,
+                                             repetition_penalty=1.1, )
+        response = lora_model.chat(tokenizer, messages=messages, generation_config=generation_config)
         print('input', input)
         print('output', response)

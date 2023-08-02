@@ -41,6 +41,26 @@ def postprocess(text):
   return text
 
 
+def build_messages(query,history = None):
+    if history is None:
+        history = []
+    messages = []
+    for q, a in history:
+        messages.append({
+            "role": "user",
+            "content": q
+        })
+        messages.append({
+            "role": "assistant",
+            "content": a
+        })
+
+    messages.append({
+        "role": "user",
+        "content": query
+    })
+    return messages
+
 class NN_DataHelper(DataHelper):
     index = 1
 
