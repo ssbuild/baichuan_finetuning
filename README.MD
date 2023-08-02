@@ -2,6 +2,7 @@
    - [deep_training](https://github.com/ssbuild/deep_training)
 
 ```text
+    08-02 增加 muti lora infer 例子, 手动升级 aigc_zoo , pip install -U https://github.com/ssbuild/aigc_zoo.git --force-reinstall --no-deps 
     07-11 support baichuan2 finetuning
 ```
    
@@ -15,9 +16,6 @@
 dev 通过一下方式安装 , 注意顺序
 pip uninstall aigc_zoo
 pip install -U git+https://github.com/ssbuild/aigc_zoo#egg=aigc_zoo
-pip uninstall deep_training
-pip install -U git+https://github.com/ssbuild/deep_training.git
-pip install -U transformers>=4.30 deepspeed transformers_stream_generator bitsandbytes>=0.39 accelerate>=0.20
 ```
 
 
