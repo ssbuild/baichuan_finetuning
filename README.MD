@@ -24,7 +24,7 @@ pip install -U git+https://github.com/ssbuild/aigc_zoo#egg=aigc_zoo
     
 - [Baichuan-13B-Base](https://huggingface.co/baichuan-inc/Baichuan-13B-Base)
 - [Baichuan-13B-Chat](https://huggingface.co/baichuan-inc/Baichuan-13B-Chat)
-
+- [baichuan-13b-chat-int4](https://huggingface.co/ssbuild/baichuan-13b-chat-int4)
 
 
 ## data sample
