@@ -10,7 +10,7 @@ import torch
 from deep_training.data_helper import ModelArguments
 from transformers import HfArgumentParser, AutoConfig, GenerationConfig
 from data_utils import train_info_args, NN_DataHelper, global_args, build_messages
-from aigc_zoo.model_zoo.baichuan2.llm_model import MyTransformer,LoraArguments,PromptArguments,BaichuanConfig,BaichuanTokenizer
+from aigc_zoo.model_zoo.baichuan2.llm_model import MyTransformer,LoraModel,LoraArguments,PromptArguments,BaichuanConfig,BaichuanTokenizer
 
 
 
@@ -58,7 +58,7 @@ def convert_to_peft(output_dir = './peft_lora'):
     m = torch.load(weight_file)
     m_new = {}
     for k,v in m.items():
-        m_new[re.sub(r'model.model','model',k)] = v
+        m_new[re.sub(r'model.model_','model',k)] = v
     torch.save(m_new,weight_file)
     return tokenizer,config,lora_args
 
@@ -100,6 +100,7 @@ if __name__ == '__main__':
         modules_to_save=lora_args.modules_to_save,
         layers_to_transform=lora_args.layers_to_transform,
         layers_pattern=lora_args.layers_pattern,
+        target_modules=lora_args.target_modules
     )
 
     #覆盖配置文件
