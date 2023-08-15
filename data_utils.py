@@ -234,7 +234,7 @@ class NN_DataHelper(DataHelper):
         maxlen = torch.max(seqlens)
 
         o['input_ids'] = o['input_ids'][:, :maxlen]
-        o['attention_mask'] = o['attention_mask'][:, :maxlen]
+        # o['attention_mask'] = o['attention_mask'][:, :maxlen]
         o['labels'] = o['labels'][:, :maxlen].long()
         return o
 

@@ -19,16 +19,16 @@ class TokenIdsFinal:
         seqlen = np.asarray(len(input_ids), dtype=np.int32)
         pad_len = max_seq_length - seqlen
         input_ids = np.asarray(input_ids, dtype=np.int32)
-        attention_mask = np.asarray([1] * len(input_ids), dtype=np.int32)
+        # attention_mask = np.asarray([1] * len(input_ids), dtype=np.int32)
         labels = np.asarray(labels, dtype=np.int32)
         if pad_len:
             pad_val = tokenizer.eos_token_id
             input_ids = np.pad(input_ids, (0, pad_len), 'constant', constant_values=(pad_val, pad_val))
-            attention_mask = np.pad(attention_mask, (0, pad_len), 'constant', constant_values=(0, 0))
+            # attention_mask = np.pad(attention_mask, (0, pad_len), 'constant', constant_values=(0, 0))
             labels = np.pad(labels, (0, pad_len), 'constant', constant_values=(-100, -100))
         d = {
             'input_ids': input_ids,
-            'attention_mask': attention_mask,
+            # 'attention_mask': attention_mask,
             'labels': labels,
             'seqlen': seqlen
         }
