@@ -3,7 +3,7 @@
 # @FileName: infer
 
 import torch
-from deep_training.data_helper import ModelArguments, DataArguments
+from deep_training.data_helper import ModelArguments
 from transformers import HfArgumentParser, BitsAndBytesConfig, GenerationConfig
 from data_utils import train_info_args, NN_DataHelper, get_deepspeed_config, global_args, build_messages
 from aigc_zoo.model_zoo.baichuan2.llm_model import MyTransformer,BaichuanConfig,BaichuanTokenizer
@@ -12,10 +12,11 @@ from aigc_zoo.utils.llm_generate import Generate
 deep_config = get_deepspeed_config()
 
 if __name__ == '__main__':
-    parser = HfArgumentParser((ModelArguments, DataArguments))
-    model_args, data_args = parser.parse_dict(train_info_args, allow_extra_keys=True)
+    train_info_args['seed'] = None
+    parser = HfArgumentParser((ModelArguments, ))
+    (model_args, ) = parser.parse_dict(train_info_args, allow_extra_keys=True)
 
-    dataHelper = NN_DataHelper(model_args, None, data_args)
+    dataHelper = NN_DataHelper(model_args)
     tokenizer, config, _,_= dataHelper.load_tokenizer_and_config(config_class_name=BaichuanConfig,
                                                                  tokenizer_class_name=BaichuanTokenizer)
     config.pad_token_id = config.eos_token_id
