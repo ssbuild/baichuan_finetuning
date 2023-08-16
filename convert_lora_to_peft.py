@@ -14,7 +14,7 @@ from aigc_zoo.model_zoo.baichuan2.llm_model import MyTransformer,LoraModel,LoraA
 
 
 
-def convert_to_peft(output_dir = './peft_lora'):
+def convert_to_peft(ckpt_dir,output_dir = './peft_lora'):
     train_info_args['seed'] = None
     parser = HfArgumentParser((ModelArguments,))
     (model_args,) = parser.parse_dict(train_info_args, allow_extra_keys=True)
@@ -23,9 +23,7 @@ def convert_to_peft(output_dir = './peft_lora'):
     tokenizer, _, _, _ = dataHelper.load_tokenizer_and_config(config_class_name=BaichuanConfig,
                                                               tokenizer_class_name=BaichuanTokenizer, )
 
-    ckpt_dir = './best_ckpt/last'
     config = BaichuanConfig.from_pretrained(ckpt_dir)
-
     lora_args = LoraArguments.from_pretrained(ckpt_dir)
 
     # 非推理模式
@@ -45,26 +43,12 @@ def convert_to_peft(output_dir = './peft_lora'):
     # 加载lora权重
     pl_model.load_sft_weight(ckpt_dir, is_trainable=True)
 
-    lora_model: LoraModel = pl_model.backbone  # noqa
-
-    lora_model.save_pretrained(output_dir)
-
-
-    del pl_model
-    gc.collect()
-
-    #权重修改
-    weight_file = os.path.join(output_dir,'adapter_model.bin')
-    m = torch.load(weight_file)
-    m_new = {}
-    for k,v in m.items():
-        m_new[re.sub(r'model.model_','model',k)] = v
-    torch.save(m_new,weight_file)
+    pl_model.save_peft_weight(output_dir)
     return tokenizer,config,lora_args
 
 
 
-def get_base_model():
+def get_base_model(ckpt_dir):
     train_info_args['seed'] = None
     parser = HfArgumentParser((ModelArguments,))
     (model_args,) = parser.parse_dict(train_info_args, allow_extra_keys=True)
@@ -73,18 +57,16 @@ def get_base_model():
     tokenizer, _, _, _ = dataHelper.load_tokenizer_and_config(config_class_name=BaichuanConfig,
                                                               tokenizer_class_name=BaichuanTokenizer, )
 
-    ckpt_dir = './best_ckpt/last'
     config = BaichuanConfig.from_pretrained(ckpt_dir)
-
-
     pl_model = MyTransformer(config=config, model_args=model_args, torch_dtype=torch.float16, )
-
     return pl_model.get_llm_model()
 
 if __name__ == '__main__':
-    peft_lora_weight = './peft_lora'
-    tokenizer,config,lora_args = convert_to_peft(peft_lora_weight)
+    ckpt_dir = './best_ckpt/last'
+    output_peft = './peft_lora'
+    tokenizer,config,lora_args = convert_to_peft(ckpt_dir,output_peft)
 
+    # 加载peft验证权重
     from transformers import AutoModelForCausalLM
     from peft import get_peft_config, get_peft_model, LoraConfig, TaskType,PeftModel
 
@@ -104,14 +86,14 @@ if __name__ == '__main__':
     )
 
     #覆盖配置文件
-    peft_config.save_pretrained(peft_lora_weight)
+    peft_config.save_pretrained(output_peft)
     # model = AutoModelForCausalLM.from_pretrained(model_name_or_path)
     # model = get_peft_model(model, peft_config)
     # model.print_trainable_parameters()
 
-    model = get_base_model()
+    model = get_base_model(ckpt_dir)
     # model = get_peft_model(model, peft_config)
-    model = PeftModel.from_pretrained(model,peft_lora_weight)
+    model = PeftModel.from_pretrained(model, output_peft)
     model.print_trainable_parameters()
 
     model.eval().half().cuda()
