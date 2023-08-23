@@ -46,3 +46,6 @@ train_target_modules_maps = {
     'cpmant' : ['project_q','project_v'],
     'rwkv' : ['key','value','receptance'],
 }
+
+
+train_model_config = train_info_models['Baichuan-13B-Chat']

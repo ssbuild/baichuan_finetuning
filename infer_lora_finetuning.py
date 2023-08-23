@@ -6,7 +6,7 @@ import torch
 from deep_training.data_helper import ModelArguments, DataArguments
 from transformers import HfArgumentParser, AutoConfig, GenerationConfig
 from data_utils import train_info_args, NN_DataHelper, global_args, build_messages
-from aigc_zoo.model_zoo.baichuan2.llm_model import MyTransformer,LoraArguments,PromptArguments,BaichuanConfig,BaichuanTokenizer
+from aigc_zoo.model_zoo.baichuan2.llm_model import MyTransformer,PetlArguments,PromptArguments,BaichuanConfig,BaichuanTokenizer
 from aigc_zoo.utils.llm_generate import Generate
 
 if __name__ == '__main__':
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     ckpt_dir = './best_ckpt/last'
 
     config = BaichuanConfig.from_pretrained(ckpt_dir)
-    lora_args = LoraArguments.from_pretrained(ckpt_dir)
+    lora_args = PetlArguments.from_pretrained(ckpt_dir)
 
     assert lora_args.inference_mode == True
 
