@@ -6,21 +6,21 @@
 train_info_models = {
     'Baichuan-13B-Base': {
         'model_type': 'baichuan',
-        'model_name_or_path': '/data/nlp/pre_models/torch/baichuan2/Baichuan-13B-Base',
-        'config_name': '/data/nlp/pre_models/torch/baichuan2/Baichuan-13B-Base/config.json',
-        'tokenizer_name': '/data/nlp/pre_models/torch/baichuan2/Baichuan-13B-Base',
+        'model_name_or_path': '/data/nlp/pre_models/torch/baichuan/Baichuan-13B-Base',
+        'config_name': '/data/nlp/pre_models/torch/baichuan/Baichuan-13B-Base/config.json',
+        'tokenizer_name': '/data/nlp/pre_models/torch/baichuan/Baichuan-13B-Base',
     },
     'Baichuan-13B-Chat': {
         'model_type': 'baichuan',
-        'model_name_or_path': '/data/nlp/pre_models/torch/baichuan2/Baichuan-13B-Chat',
-        'config_name': '/data/nlp/pre_models/torch/baichuan2/Baichuan-13B-Chat/config.json',
-        'tokenizer_name': '/data/nlp/pre_models/torch/baichuan2/Baichuan-13B-Chat',
+        'model_name_or_path': '/data/nlp/pre_models/torch/baichuan/Baichuan-13B-Chat',
+        'config_name': '/data/nlp/pre_models/torch/baichuan/Baichuan-13B-Chat/config.json',
+        'tokenizer_name': '/data/nlp/pre_models/torch/baichuan/Baichuan-13B-Chat',
     },
     'baichuan-13b-chat-int4': {
         'model_type': 'baichuan',
-        'model_name_or_path': '/data/nlp/pre_models/torch/baichuan2/baichuan-13b-chat-int4',
-        'config_name': '/data/nlp/pre_models/torch/baichuan2/baichuan-13b-chat-int4/config.json',
-        'tokenizer_name': '/data/nlp/pre_models/torch/baichuan2/baichuan-13b-chat-int4',
+        'model_name_or_path': '/data/nlp/pre_models/torch/baichuan/baichuan-13b-chat-int4',
+        'config_name': '/data/nlp/pre_models/torch/baichuan/baichuan-13b-chat-int4/config.json',
+        'tokenizer_name': '/data/nlp/pre_models/torch/baichuan/baichuan-13b-chat-int4',
     },
 
 
