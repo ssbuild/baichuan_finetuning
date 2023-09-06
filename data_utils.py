@@ -245,7 +245,7 @@ class NN_DataHelper(DataHelper):
         #schema for arrow parquet
         schema = {
             "input_ids": "int32_list",
-            "attention_mask": "int32_list",
+            # "attention_mask": "int32_list",
             "labels": "int32_list",
             "seqlen": "int32_list",
         }
