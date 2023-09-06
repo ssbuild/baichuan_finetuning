@@ -140,4 +140,4 @@ a answer   must
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=ssbuild/baicuan2_finetuning&type=Date)](https://star-history.com/#ssbuild/baichuan2_finetuning&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=ssbuild/baichuan2_finetuning&type=Date)](https://star-history.com/#ssbuild/baichuan2_finetuning&Date)
