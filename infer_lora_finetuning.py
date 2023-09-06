@@ -6,8 +6,8 @@ import torch
 from deep_training.data_helper import ModelArguments, DataArguments
 from transformers import HfArgumentParser, AutoConfig, GenerationConfig
 from data_utils import train_info_args, NN_DataHelper, global_args, build_messages
-from aigc_zoo.model_zoo.baichuan.v1.baichuan2.llm_model import MyTransformer,PetlArguments,PromptArguments,BaichuanConfig,BaichuanTokenizer
-from aigc_zoo.utils.llm_generate import Generate
+from module_setup import MyTransformer,PetlArguments,PromptArguments,BaichuanConfig,BaichuanTokenizer
+
 
 if __name__ == '__main__':
     train_info_args['seed'] = None
@@ -57,7 +57,7 @@ if __name__ == '__main__':
                      ]
         for input in text_list:
             messages = build_messages(input)
-            generation_config = GenerationConfig(eos_token_id=config.eos_token_id,
+            generation_config = GenerationConfig(max_new_tokens=512,eos_token_id=config.eos_token_id,
                                                  pad_token_id=config.eos_token_id,
                                                  do_sample=True, top_k=5, top_p=0.85, temperature=0.3,
                                                  repetition_penalty=1.1, )
