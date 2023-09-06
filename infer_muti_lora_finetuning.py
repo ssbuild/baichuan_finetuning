@@ -6,7 +6,7 @@ import torch
 from deep_training.data_helper import ModelArguments, DataArguments
 from transformers import HfArgumentParser, AutoConfig, GenerationConfig
 from data_utils import train_info_args, NN_DataHelper, global_args, build_messages
-from aigc_zoo.model_zoo.baichuan2.llm_model import MyTransformer,PetlArguments,\
+from aigc_zoo.model_zoo.baichuan.v1.baichuan2.llm_model import MyTransformer,PetlArguments,\
     PromptArguments,BaichuanConfig,BaichuanTokenizer,PetlModel
 from aigc_zoo.utils.llm_generate import Generate
 

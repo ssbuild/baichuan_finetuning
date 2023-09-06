@@ -7,7 +7,7 @@ from deep_training.data_helper import ModelArguments, DataArguments
 from transformers import HfArgumentParser,AutoConfig
 
 from data_utils import train_info_args, NN_DataHelper
-from aigc_zoo.model_zoo.baichuan2.llm_model import MyTransformer,PromptArguments,BaichuanConfig,BaichuanTokenizer
+from aigc_zoo.model_zoo.baichuan.v1.baichuan2.llm_model import MyTransformer,PromptArguments,BaichuanConfig,BaichuanTokenizer
 from aigc_zoo.utils.llm_generate import Generate
 
 if __name__ == '__main__':

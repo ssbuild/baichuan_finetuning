@@ -14,7 +14,7 @@ from deep_training.data_helper import DataHelper, ModelArguments, TrainingArgume
 from fastdatasets.record import load_dataset as Loader, RECORD, WriterObject, gfile
 from transformers import PreTrainedTokenizer, HfArgumentParser, PretrainedConfig
 from data_processer import DataStrategy, TokenSupervision, TokenUnSupervision, TokenSupervisionRounds
-from aigc_zoo.model_zoo.baichuan2.llm_model import PetlArguments,LoraConfig,PromptArguments,BaichuanConfig,BaichuanTokenizer
+from aigc_zoo.model_zoo.baichuan.v1.baichuan2.llm_model import PetlArguments,LoraConfig,PromptArguments,BaichuanConfig,BaichuanTokenizer
 
 from config import *
 
