@@ -123,6 +123,7 @@ a answer   must
 - [rlhf_chatyuan](https://github.com/ssbuild/rlhf_chatyuan)
 - [rwkv_finetuning](https://github.com/ssbuild/rwkv_finetuning)
 - [baichuan_finetuning](https://github.com/ssbuild/baichuan_finetuning)
+- [baichuan-13b_finetuning](https://github.com/ssbuild/baichuan-13b_finetuning)
 - [baichuan2_finetuning](https://github.com/ssbuild/baichuan2_finetuning)
 
 ## 
@@ -130,4 +131,4 @@ a answer   must
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=ssbuild/baicuan2_finetuning&type=Date)](https://star-history.com/#ssbuild/baichuan2_finetuning&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=ssbuild/baichuan-13b_finetuning&type=Date)](https://star-history.com/#ssbuild/baichuan-13b_finetuning&Date)
