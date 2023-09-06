@@ -7,7 +7,7 @@ from deep_training.data_helper import ModelArguments, DataArguments
 from transformers import HfArgumentParser,AutoConfig
 
 from data_utils import train_info_args, NN_DataHelper
-from aigc_zoo.model_zoo.baichuan.v1.baichuan2.llm_model import MyTransformer,PromptArguments,BaichuanConfig,BaichuanTokenizer
+from module_setup import MyTransformer,PromptArguments,BaichuanConfig,BaichuanTokenizer
 from aigc_zoo.utils.llm_generate import Generate
 
 if __name__ == '__main__':
@@ -48,7 +48,7 @@ if __name__ == '__main__':
                  "晚上睡不着应该怎么办",
                  "从南京到上海的路线"]
     for input in text_list:
-        response = Generate.generate(model, query=input, tokenizer=tokenizer, max_length=512,
+        response = Generate.generate(model, query=input, tokenizer=tokenizer, max_new_tokens=512,
                                           eos_token_id=config.eos_token_id,pad_token_id=config.eos_token_id,
                                           do_sample=False, top_p=0.7, temperature=0.95, )
         print('input', input)

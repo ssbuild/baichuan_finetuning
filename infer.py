@@ -6,8 +6,8 @@ import torch
 from deep_training.data_helper import ModelArguments
 from transformers import HfArgumentParser, BitsAndBytesConfig, GenerationConfig
 from data_utils import train_info_args, NN_DataHelper, get_deepspeed_config, global_args, build_messages
-from aigc_zoo.model_zoo.baichuan.v1.baichuan2.llm_model import MyTransformer,BaichuanConfig,BaichuanTokenizer
-from aigc_zoo.utils.llm_generate import Generate
+from module_setup import MyTransformer,BaichuanConfig,BaichuanTokenizer
+
 
 deep_config = get_deepspeed_config()
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
         # 按需修改，目前只支持 4/8 bit 量化 ， 可以保存量化模型
         model.half().quantize(4).cuda()
         # 保存量化权重
-        # model.save_pretrained('baichuan-13b-int4',max_shard_size="4GB")
+        # model.save_pretrained('baichuan2-7b-int4',max_shard_size="3GB")
         # exit(0)
     else:
         # 已经量化

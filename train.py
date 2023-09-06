@@ -9,7 +9,7 @@ from lightning.pytorch.callbacks import LearningRateMonitor
 from lightning.pytorch.strategies import DeepSpeedStrategy
 from transformers import HfArgumentParser
 from data_utils import NN_DataHelper, train_info_args, get_deepspeed_config, global_args
-from aigc_zoo.model_zoo.baichuan.v1.baichuan2.llm_model import MyTransformer, PetlArguments, LoraConfig, PromptArguments,BaichuanTokenizer,BaichuanConfig
+from module_setup import MyTransformer, PetlArguments, LoraConfig, PromptArguments,BaichuanTokenizer,BaichuanConfig
 
 
 

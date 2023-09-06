@@ -2,8 +2,8 @@
    - [deep_training](https://github.com/ssbuild/deep_training)
 
 ```text
-    08-02 增加 muti lora infer 例子, 手动升级 aigc_zoo , pip install -U git+https://github.com/ssbuild/aigc_zoo.git --force-reinstall --no-deps 
-    07-11 support baichuan2 finetuning
+    09-06 原仓库baichuan2_fintuning 改名 baichuan-13b_finetuning
+   
 ```
    
 
@@ -19,12 +19,22 @@ pip install -U git+https://github.com/ssbuild/aigc_zoo#egg=aigc_zoo
 ```
 
 
-
-## weigtht select one is suitable for you
-    
+## v1 weight
 - [Baichuan-13B-Base](https://huggingface.co/baichuan-inc/Baichuan-13B-Base)
 - [Baichuan-13B-Chat](https://huggingface.co/baichuan-inc/Baichuan-13B-Chat)
 - [baichuan-13b-chat-int4](https://huggingface.co/ssbuild/baichuan-13b-chat-int4)
+
+## v2 weight
+- [Baichuan2-7B-Chat](https://huggingface.co/baichuan-inc/Baichuan2-7B-Chat)
+- [Baichuan2-7B-Base](https://huggingface.co/baichuan-inc/Baichuan2-7B-Base)
+- [baichuan2-7b-chat-int4](https://huggingface.co/ssbuild/baichuan2-7b-chat-int4)
+- 
+- [Baichuan2-13B-Chat](https://huggingface.co/baichuan-inc/Baichuan2-13B-Chat)
+- [Baichuan2-13B-Base](https://huggingface.co/baichuan-inc/Baichuan2-13B-Base)
+- [baichuan2-13b-chat-int4](https://huggingface.co/ssbuild/baichuan2-13b-chat-int4)
+
+
+
 
 
 ## data sample
@@ -93,8 +103,8 @@ a answer   must
     # infer_lora_finetuning.py 推理微调模型
     # infer_ptuning.py 推理p-tuning-v2微调模型
      python infer_finetuning.py
-
-
+![infer](assets/1.png)
+![infer](assets/2.png)
 
 ## training
 ```text
@@ -123,7 +133,6 @@ a answer   must
 - [rlhf_chatyuan](https://github.com/ssbuild/rlhf_chatyuan)
 - [rwkv_finetuning](https://github.com/ssbuild/rwkv_finetuning)
 - [baichuan_finetuning](https://github.com/ssbuild/baichuan_finetuning)
-- [baichuan-13b_finetuning](https://github.com/ssbuild/baichuan-13b_finetuning)
 - [baichuan2_finetuning](https://github.com/ssbuild/baichuan2_finetuning)
 
 ## 
@@ -131,4 +140,4 @@ a answer   must
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=ssbuild/baichuan-13b_finetuning&type=Date)](https://star-history.com/#ssbuild/baichuan-13b_finetuning&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=ssbuild/baicuan2_finetuning&type=Date)](https://star-history.com/#ssbuild/baichuan2_finetuning&Date)
