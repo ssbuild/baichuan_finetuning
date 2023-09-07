@@ -9,9 +9,8 @@ from transformers import PreTrainedTokenizer
 
 
 class DataStrategy(Enum):
-    sup = 1
-    unsup = 2
-    sub_rounds = 3
+    tunction = 1
+    slidding = 2
 
 class TokenIdsFinal:
     @classmethod
@@ -34,86 +33,82 @@ class TokenIdsFinal:
         }
         return d
 
-class TokenUnSupervision:
-    @classmethod
-    def process(cls, tokenizer: PreTrainedTokenizer,config,stride, max_seq_length, examples):
-        prefix,examples = examples
-        input_ids_all = []
-        if len(prefix) > 0:
-            input_ids_all += tokenizer.encode(text=prefix,add_special_tokens=False)
 
-        for idx, (question, answer) in enumerate(examples):
-            a_ids = [195] + tokenizer.encode(text=question,add_special_tokens=False)
-            b_ids = [196] + tokenizer.encode(text=answer) + [config.eos_token_id]
+
+class TokenTunction:
+    @classmethod
+    def process(cls, tokenizer: PreTrainedTokenizer, config, sup,ensure_answer_min_length, max_seq_length, examples):
+        ds = []
+        prefix, examples = examples
+        for sid, (q, a) in enumerate(examples):
+            a_ids, b_ids = [], []
+            if len(prefix) > 0:
+                a_ids += tokenizer.encode(text=prefix, add_special_tokens=False)
+
+            for j in range(sid + 1):
+                if j != sid:
+                    a_ids += [195] + tokenizer.encode(text=q, add_special_tokens=False) + [196] + tokenizer.encode(
+                        text=a, add_special_tokens=False)
+                else:
+                    a_ids += [195] + tokenizer.encode(text=q, add_special_tokens=False)
+                    b_ids = [196] + tokenizer.encode(text=a) + [config.eos_token_id]
+
             ids = a_ids + b_ids
             if len(ids) <= 3:
                 continue
-            input_ids_all += ids
 
-        # decoder_start_token_id = self.config.decoder_start_token_id
-        decoder_start_token_id = config.bos_token_id
-        pos = 0
+            a_max_len = max(max_seq_length - len(b_ids) - 3 - ensure_answer_min_length,0)
+            input_ids = a_ids[-a_max_len:] + b_ids
+            a_len = max(len(input_ids) - len(b_ids),0)
+            input_ids = input_ids[:max_seq_length - 3] + [config.eos_token_id]
+            if sup:
+                labels = [-100] * a_len + input_ids[a_len:]
+            else:
+                labels = copy.deepcopy(input_ids)
+            input_ids = [config.bos_token_id] + input_ids
+            labels = [-100] + labels if sup else [config.bos_token_id] + labels
+
+            ds.append(TokenIdsFinal.process(tokenizer, input_ids, labels, max_seq_length))
+        return ds
+
+
+class TokenSlidding:
+    @classmethod
+    def process(cls, tokenizer: PreTrainedTokenizer,config,stride,sup, max_seq_length, examples):
         ds = []
-        while pos < len(input_ids_all):
-            input_ids = [decoder_start_token_id] + input_ids_all[pos: pos + max_seq_length - 1]
-            pos += stride
+        prefix,examples = examples
+        for sid, (q, a) in enumerate(examples):
+            a_ids,b_ids = [],[]
+            if len(prefix) > 0:
+                a_ids += tokenizer.encode(text=prefix, add_special_tokens=False)
 
-            if len(input_ids) <= 5:
+            for j in range(sid + 1):
+                if j != sid:
+                    a_ids += [195] + tokenizer.encode(text=q,add_special_tokens=False) + [196] + tokenizer.encode(text=a, add_special_tokens=False)
+                else:
+                    a_ids += [195] + tokenizer.encode(text=q, add_special_tokens=False)
+                    b_ids = [196] + tokenizer.encode(text=a) + [config.eos_token_id]
+
+            ids = a_ids + b_ids
+            if len(ids) <= 3:
                 continue
 
-            d = TokenIdsFinal.process(tokenizer,input_ids,copy.deepcopy(input_ids),max_seq_length)
-            ds.append(d)
-        return ds
-
-
-class TokenSupervision:
-    @classmethod
-    def process(cls, tokenizer: PreTrainedTokenizer,config,stride, max_seq_length, examples):
-        prefix, examples = examples
-
-        ds = []
-        for idx, (question, answer) in enumerate(examples):
-            a_ids = [195] + tokenizer.encode(text=prefix + question,add_special_tokens=False)[:max_seq_length-6]
-            b_ids = [196] + tokenizer.encode(text=answer) + [config.eos_token_id]
-            assert len(b_ids)
             input_ids_all = a_ids + b_ids
-            labels_all = [-100] * len(a_ids) + b_ids
-            pos = 0
-            while pos < len(input_ids_all):
-                input_ids = [config.bos_token_id] + input_ids_all[pos: pos + max_seq_length-1]
-                labels = [config.bos_token_id] + labels_all[pos: pos + max_seq_length-1]
-                pos += stride
-                d = TokenIdsFinal.process(tokenizer, input_ids, labels, max_seq_length)
-                ds.append(d)
-        return ds
-
-class TokenSupervisionRounds:
-    @classmethod
-    def process(cls, tokenizer: PreTrainedTokenizer,config,stride, max_seq_length, examples):
-        prefix, examples = examples
-
-        ds = []
-        prompt_text = ''
-        for idx, (question, answer) in enumerate(examples):
-            if idx == 0:
-                a_text = question
-            else:
-                a_text = prompt_text + "[Round {}]\n问：{}\n答：".format(idx, question)
-
-            prompt_text += "[Round {}]\n问：{}\n答：{}".format(idx, question, answer)
-            a_ids = [195] +tokenizer.encode(text=prefix + a_text,add_special_tokens=False)[:max_seq_length-6]
-            b_ids = [196] +tokenizer.encode(text=answer) + [config.eos_token_id]
-
-
-            assert len(b_ids)
-            input_ids_all = a_ids + b_ids
-            labels_all = [-100] * len(a_ids) + b_ids
+            labels_all = [-100] * len(a_ids) + b_ids if sup else copy.deepcopy(input_ids_all)
             pos = 0
             while pos < len(input_ids_all):
                 input_ids = [config.bos_token_id] + input_ids_all[pos: pos + max_seq_length - 1]
-                labels = [config.bos_token_id] + labels_all[pos: pos + max_seq_length - 1]
+                labels = [config.bos_token_id] + labels_all[pos: pos + max_seq_length - 1] if sup else [-100] + labels_all[pos: pos + max_seq_length - 1]
                 pos += stride
-                d = TokenIdsFinal.process(tokenizer, input_ids, labels, max_seq_length)
-                ds.append(d)
+                
+                if np.all(np.asarray(labels) == -100):
+                    continue
+                ds.append(TokenIdsFinal.process(tokenizer, input_ids, labels, max_seq_length))
+
+            input_ids_all += ids
+            labels_all += [-100] * len(a_ids) + b_ids
         return ds
+
+
+
 
