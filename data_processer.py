@@ -98,7 +98,7 @@ class TokenSlidding:
             pos = 0
             while pos < len(input_ids_all):
                 input_ids = [config.bos_token_id] + input_ids_all[pos: pos + max_seq_length - 1]
-                labels = [config.bos_token_id] + labels_all[pos: pos + max_seq_length - 1] if sup else [-100] + labels_all[pos: pos + max_seq_length - 1]
+                labels = [-100] + labels_all[pos: pos + max_seq_length - 1] if sup else [config.bos_token_id] + labels_all[pos: pos + max_seq_length - 1]
                 pos += stride
                 
                 if np.all(np.asarray(labels) == -100):
