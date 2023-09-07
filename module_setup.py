@@ -6,9 +6,10 @@ from deep_training.utils.hf import register_transformer_model,register_transform
 from config import *
 
 _model_card = train_info_args["model_name_or_path"].split('/')[-1].lower()
+assert "7b" in _model_card or "13b" in _model_card
 if "baichuan2" in _model_card:
-    assert "7b" in _model_card or "13b" in _model_card
-    if "7b" in train_info_args["model_name_or_path"].split('/')[-1].lower():
+
+    if "7b" in _model_card:
         from aigc_zoo.model_zoo.baichuan.baichuan2_7b.llm_model import (MyTransformer,PetlArguments, # noqa
                                                                         LoraConfig,PetlModel,
                                                                         PromptArguments,
@@ -21,8 +22,7 @@ if "baichuan2" in _model_card:
                                                                         BaichuanConfig,
                                                                         BaichuanTokenizer)
 else:
-    assert "7b" in _model_card or "13b" in _model_card
-    if "7b" in train_info_args["model_name_or_path"].split('/')[-1].lower():
+    if "7b" in _model_card:
         from aigc_zoo.model_zoo.baichuan.baichuan_7b.llm_model import (MyTransformer, PetlArguments,  # noqa
                                                                         LoraConfig, PetlModel,
                                                                         PromptArguments,
