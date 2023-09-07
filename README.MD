@@ -2,7 +2,7 @@
    - [deep_training](https://github.com/ssbuild/deep_training)
 
 ```text
-    09-06 原仓库baichuan2_fintuning 改名 baichuan-13b_finetuning
+    09-06 整合baichuan finetuning ,  support baichuan2 finetuning
    
 ```
    
