@@ -53,9 +53,6 @@ class TokenTunction:
                     a_ids += [195] + tokenizer.encode(text=q, add_special_tokens=False)
                     b_ids = [196] + tokenizer.encode(text=a) + [config.eos_token_id]
 
-            ids = a_ids + b_ids
-            if len(ids) <= 3:
-                continue
 
             a_max_len = max(max_seq_length - len(b_ids) - 3 - ensure_answer_min_length,0)
             input_ids = a_ids[-a_max_len:] + b_ids
@@ -67,6 +64,9 @@ class TokenTunction:
                 labels = copy.deepcopy(input_ids)
             input_ids = [config.bos_token_id] + input_ids
             labels = [-100] + labels if sup else [config.bos_token_id] + labels
+
+            if len(input_ids) <= 2:
+                continue
 
             ds.append(TokenIdsFinal.process(tokenizer, input_ids, labels, max_seq_length))
         return ds
@@ -89,24 +89,19 @@ class TokenSlidding:
                     a_ids += [195] + tokenizer.encode(text=q, add_special_tokens=False)
                     b_ids = [196] + tokenizer.encode(text=a) + [config.eos_token_id]
 
-            ids = a_ids + b_ids
-            if len(ids) <= 3:
-                continue
-
             input_ids_all = a_ids + b_ids
             labels_all = [-100] * len(a_ids) + b_ids if sup else copy.deepcopy(input_ids_all)
+            if len(input_ids_all) <= 2:
+                continue
+
             pos = 0
             while pos < len(input_ids_all):
                 input_ids = [config.bos_token_id] + input_ids_all[pos: pos + max_seq_length - 1]
                 labels = [-100] + labels_all[pos: pos + max_seq_length - 1] if sup else [config.bos_token_id] + labels_all[pos: pos + max_seq_length - 1]
                 pos += stride
-                
                 if np.all(np.asarray(labels) == -100):
                     continue
                 ds.append(TokenIdsFinal.process(tokenizer, input_ids, labels, max_seq_length))
-
-            input_ids_all += ids
-            labels_all += [-100] * len(a_ids) + b_ids
         return ds
 
 
