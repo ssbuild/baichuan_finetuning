@@ -235,6 +235,11 @@ class NN_DataHelper(DataHelper):
         o['input_ids'] = o['input_ids'][:, :maxlen]
         # o['attention_mask'] = o['attention_mask'][:, :maxlen]
         o['labels'] = o['labels'][:, :maxlen].long()
+
+        attention_mask = torch.ones_like(o['input_ids'],dtype=torch.bool)
+        for i,seqlen in enumerate(seqlens):
+            attention_mask[i,seqlen:] = 0
+        o['attention_mask'] = attention_mask
         return o
 
 
