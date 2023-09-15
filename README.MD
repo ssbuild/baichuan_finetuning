@@ -2,6 +2,7 @@
    - [deep_training](https://github.com/ssbuild/deep_training)
 
 ```text
+    09-15 deep_training >= 0.2.2.post4
     09-08 fix baichuan ptv2
     09-06 整合baichuan finetuning ,  support baichuan2 finetuning
 ```
