@@ -14,9 +14,48 @@ class DataStrategy(Enum):
     tunction = 1
     slidding = 2
 
-class TokenIdsFinal:
+
+
+def build_template_baichuan(query, answer = None,prefix=None, history=None,tok_ins=None,tok_res=None):
+    assert tok_ins is not None and tok_res is not None
+    prompt = prefix or ''
+    if history is not None:
+        for q, a in history:
+            prompt += "{}{}{}{}".format(tok_ins, q, tok_res, a)
+
+    prompt += "{}{}{}".format(tok_ins, query, tok_res)
+    if answer is not None:
+        prompt += answer
+    return prompt
+
+def build_template_default(query, answer = None,prefix=None, history=None):
+    prompt = prefix or ''
+    if history is not None:
+        for q,a in history:
+            prompt += "User: {}\nAssistant:{}".format(q,a)
+    prompt +=  "User: {}\nAssistant:".format(query)
+    if answer is not None:
+        prompt += answer
+    return prompt
+
+def build_template_tiger(query,answer = None,prefix=None, history=None):
+    prompt = prefix or ''
+    tok_ins = "\n\n### Instruction:\n"
+    tok_res = "\n\n### Response:\n"
+    if history is not None:
+        for q,a in history:
+            prompt += "{}{}{}{}".format(tok_ins,q,tok_res,a)
+
+    prompt += "{}{}{}".format(tok_ins, query, tok_res)
+    if answer is not None:
+        prompt += answer
+    return prompt
+
+build_template = build_template_baichuan
+
+class TokenIdsMaker:
     @classmethod
-    def process(cls,tokenizer,input_ids,labels,max_seq_length):
+    def final(cls, tokenizer, input_ids, labels, max_seq_length):
         seqlen = np.asarray(len(input_ids), dtype=np.int32)
         pad_len = max_seq_length - seqlen
         input_ids = np.asarray(input_ids, dtype=np.int32)
@@ -34,104 +73,79 @@ class TokenIdsFinal:
             'seqlen': seqlen
         }
         return d
-
-
-def build_template_baichuan(query, answer = None, history=None,tok_ins=None,tok_res=None):
-    assert tok_ins is not None and tok_res is not None
-    prompt = ''
-    if history is not None:
-        for q, a in history:
-            prompt += "{}{}{}{}".format(tok_ins, q, tok_res, a)
-
-    prompt += "{}{}{}".format(tok_ins, query, tok_res)
-    if answer is not None:
-        prompt += answer
-    return prompt
-
-def build_template_default(query, answer = None, history=None):
-    prompt = ''
-    if history is not None:
-        for q,a in history:
-            prompt += "User: {}\nAssistant:{}".format(q,a)
-    prompt +=  "User: {}\nAssistant:".format(query)
-    if answer is not None:
-        prompt += answer
-    return prompt
-
-def build_template_tiger(query,answer = None, history=None):
-    prompt = ''
-    tok_ins = "\n\n### Instruction:\n"
-    tok_res = "\n\n### Response:\n"
-    if history is not None:
-        for q,a in history:
-            prompt += "{}{}{}{}".format(tok_ins,q,tok_res,a)
-
-    prompt += "{}{}{}".format(tok_ins, query, tok_res)
-    if answer is not None:
-        prompt += answer
-    return prompt
-
-build_template = build_template_baichuan
-
-class TokenTunction:
     @classmethod
-    def process(cls, tokenizer: PreTrainedTokenizer, config, sup,ensure_answer_min_length, max_seq_length, examples):
+    def tunction(cls, tokenizer: PreTrainedTokenizer, config, sup, max_seq_length, examples):
         build_template_ = partial(build_template,tok_ins=tokenizer.convert_ids_to_tokens(195),
                                   tok_res=tokenizer.convert_ids_to_tokens(196))
+        sptoken = [config.bos_token_id]
         ds = []
         prefix, examples = examples
         for sid, (q, a) in enumerate(examples):
-            a_ids, b_ids = [], []
-            if len(prefix) > 0:
-                a_ids += tokenizer.encode(text=prefix, add_special_tokens=False)
+            a_ids = tokenizer.encode(text=build_template_(q,prefix=prefix,history=examples[:sid]), add_special_tokens=False)
+            b_ids = tokenizer.encode(text=a, add_special_tokens=False)
+            while len(a_ids) + len(b_ids) > max_seq_length - len(sptoken) - 1:
+                if len(b_ids) > len(a_ids):
+                    b_ids.pop(-1)
+                else:
+                    a_ids.pop(0)
+            b_ids += [config.eos_token_id]
+            input_ids_all = a_ids + b_ids
+            labels_all = copy.deepcopy(input_ids_all) if not sup else [-100] * len(a_ids) + copy.deepcopy(b_ids)
+            pos = 0
+            while pos < len(input_ids_all):
+                input_ids = input_ids_all[pos:pos + max_seq_length - len(sptoken)]
+                labels = labels_all[pos:pos + max_seq_length - len(sptoken)]
 
-            a_ids += tokenizer.encode(text=build_template_(q,history=examples[:sid]), add_special_tokens=False)
-            b_ids = tokenizer.encode(text=a)[:max_seq_length -  3 - ensure_answer_min_length] + [config.eos_token_id]
-            a_maxlen = max_seq_length - len(b_ids) - 1
-            input_ids = a_ids[-a_maxlen:] + b_ids
-            a_len = len(input_ids) - len(b_ids)
-            if sup:
-                labels = [-100] * a_len + input_ids[a_len:]
-            else:
-                labels = copy.deepcopy(input_ids)
-            input_ids = [config.bos_token_id] + input_ids
-            labels = [-100] + labels if sup else [config.bos_token_id] + labels
+                pos += pos + max_seq_length - len(sptoken)
+                if np.all(np.asarray(labels) == -100):
+                    continue
 
-            if len(input_ids) <= 2:
-                continue
-
-            ds.append(TokenIdsFinal.process(tokenizer, input_ids, labels, max_seq_length))
+                input_ids = sptoken + input_ids
+                labels = sptoken + labels if not sup else [-100] * len(sptoken) + labels
+                ds.append(cls.final(tokenizer, input_ids, labels, max_seq_length))
         return ds
 
 
-class TokenSlidding:
     @classmethod
-    def process(cls, tokenizer: PreTrainedTokenizer,config,stride,sup, max_seq_length, examples):
+    def slidding(cls, tokenizer: PreTrainedTokenizer,config,stride,max_seq_length, examples,
+                 sliding_size=None,
+                 src_max_length=-1,
+                 dst_max_length=-1,
+                 sup=True):
         build_template_ = partial(build_template, tok_ins=tokenizer.convert_ids_to_tokens(195),
                                   tok_res=tokenizer.convert_ids_to_tokens(196))
 
+        sptoken = [config.bos_token_id]
+        if sliding_size is None or sliding_size < 0:
+            sliding_size = max_seq_length - len(sptoken)
+
+        assert sliding_size <= max_seq_length - len(sptoken)
+
         ds = []
-        prefix,examples = examples
+        prefix, examples = examples
         for sid, (q, a) in enumerate(examples):
-            a_ids,b_ids = [],[]
-            if len(prefix) > 0:
-                a_ids += tokenizer.encode(text=prefix, add_special_tokens=False)
+            a_ids = tokenizer.encode(text=build_template_(q, prefix=prefix, history=examples[:sid]),add_special_tokens=False)
+            b_ids = tokenizer.encode(text=a, add_special_tokens=False)
+            if src_max_length and src_max_length > 0:
+                a_ids = a_ids[:src_max_length]
+            if dst_max_length and dst_max_length > 0:
+                b_ids = b_ids[:dst_max_length]
 
-            a_ids += tokenizer.encode(text=build_template_(q,history=examples[:sid]), add_special_tokens=False)
-            b_ids = tokenizer.encode(text=a) + [config.eos_token_id]
-
-            input_ids_all = a_ids + b_ids
-            labels_all = [-100] * len(a_ids) + b_ids if sup else copy.deepcopy(input_ids_all)
-            if len(input_ids_all) <= 2:
-                continue
+            b_ids += [config.eos_token_id]
+            input_ids_qa = a_ids + b_ids
+            labels_all = copy.deepcopy(input_ids_qa) if not sup else [-100] * len(a_ids) + b_ids
 
             pos = 0
-            while pos < len(input_ids_all):
-                input_ids = [config.bos_token_id] + input_ids_all[pos: pos + max_seq_length - 1]
-                labels = [-100] + labels_all[pos: pos + max_seq_length - 1] if sup else [config.bos_token_id] + labels_all[pos: pos + max_seq_length - 1]
-                pos += stride
+            while pos < len(input_ids_qa):
+                input_ids = input_ids_qa[pos:pos + max_seq_length - len(sptoken)]
+                labels = labels_all[pos:pos + max_seq_length - len(sptoken)]
+
+                pos += pos + sliding_size
                 if np.all(np.asarray(labels) == -100):
                     continue
-                ds.append(TokenIdsFinal.process(tokenizer, input_ids, labels, max_seq_length))
+
+                input_ids = sptoken + input_ids
+                labels = sptoken + labels if not sup else [-100] * len(sptoken) + labels
+                ds.append(cls.final(tokenizer, input_ids, labels, max_seq_length))
         return ds
 
