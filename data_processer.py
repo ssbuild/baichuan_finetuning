@@ -131,7 +131,7 @@ class TokenIdsMaker:
                 input_ids = input_ids_qa[pos:pos + max_seq_length - len(sptoken)]
                 labels = labels_all[pos:pos + max_seq_length - len(sptoken)]
 
-                pos += pos + sliding_size
+                pos += sliding_size
                 if np.all(np.asarray(labels) == -100):
                     continue
 
