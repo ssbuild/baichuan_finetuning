@@ -11,7 +11,7 @@ from transformers import HfArgumentParser
 from data_utils import NN_DataHelper, train_info_args, get_deepspeed_config, global_args
 from module_setup import MyTransformer, PetlArguments, LoraConfig, PromptArguments,BaichuanTokenizer,BaichuanConfig
 
-
+assert global_args["trainer_backend"] == "pl"
 
 if __name__ == '__main__':
     parser = HfArgumentParser((ModelArguments, TrainingArguments, DataArguments, PetlArguments,PromptArguments))
