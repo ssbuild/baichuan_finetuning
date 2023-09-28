@@ -2,6 +2,18 @@
 # @Time:  23:20
 # @Author: tk
 # @File：model_maps
+from aigc_zoo.constants.define import (TRANSFORMERS_MODELS_TO_LORA_TARGET_MODULES_MAPPING,
+                                       TRANSFORMERS_MODELS_TO_ADALORA_TARGET_MODULES_MAPPING,
+                                       TRANSFORMERS_MODELS_TO_IA3_TARGET_MODULES_MAPPING,
+                                       TRANSFORMERS_MODELS_TO_IA3_FEEDFORWARD_MODULES_MAPPING)
+
+__all__ = [
+    "TRANSFORMERS_MODELS_TO_LORA_TARGET_MODULES_MAPPING",
+    "TRANSFORMERS_MODELS_TO_ADALORA_TARGET_MODULES_MAPPING",
+    "TRANSFORMERS_MODELS_TO_IA3_TARGET_MODULES_MAPPING",
+    "TRANSFORMERS_MODELS_TO_IA3_FEEDFORWARD_MODULES_MAPPING",
+    "train_model_config"
+]
 
 train_info_models = {
     # 第二代模型
@@ -69,25 +81,10 @@ train_info_models = {
 }
 
 
-# 'target_modules': ['query_key_value'],  # bloom,gpt_neox
-# 'target_modules': ["q_proj", "v_proj"], #llama,opt,gptj,gpt_neo
-# 'target_modules': ['c_attn'], #gpt2
-# 'target_modules': ['project_q','project_v'] # cpmant
-
-train_target_modules_maps = {
-    'baichuan': ['W_pack'],
-    'moss': ['qkv_proj'],
-    'chatglm': ['query_key_value'],
-    'bloom' : ['query_key_value'],
-    'gpt_neox' : ['query_key_value'],
-    'llama' : ["q_proj", "v_proj"],
-    'opt' : ["q_proj", "v_proj"],
-    'gptj' : ["q_proj", "v_proj"],
-    'gpt_neo' : ["q_proj", "v_proj"],
-    'gpt2' : ['c_attn'],
-    'cpmant' : ['project_q','project_v'],
-    'rwkv' : ['key','value','receptance'],
-}
-
+# 按需修改
+# TRANSFORMERS_MODELS_TO_LORA_TARGET_MODULES_MAPPING
+# TRANSFORMERS_MODELS_TO_ADALORA_TARGET_MODULES_MAPPING
+# TRANSFORMERS_MODELS_TO_IA3_TARGET_MODULES_MAPPING
+# TRANSFORMERS_MODELS_TO_IA3_FEEDFORWARD_MODULES_MAPPING
 
 train_model_config = train_info_models['Baichuan2-7B-Chat']
