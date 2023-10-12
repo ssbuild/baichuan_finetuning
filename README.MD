@@ -126,7 +126,7 @@ a answer   must
         bash train_lora.sh
         
     # ptv2
-        bash train_lora.sh
+        bash train_ptv2.sh
 ```
    
 ## 训练参数
