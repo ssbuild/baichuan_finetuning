@@ -1,12 +1,17 @@
 # @Time    : 2023/4/2 22:49
 # @Author  : tk
 # @FileName: infer_lora_finetuning
+
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
+
 import torch
 from deep_training.data_helper import ModelArguments, DataArguments
 from transformers import HfArgumentParser, AutoConfig, GenerationConfig
 from data_utils import train_info_args, NN_DataHelper, global_args, build_messages
-from module_setup import MyTransformer,PetlArguments,PromptArguments,BaichuanConfig,BaichuanTokenizer
+from module_setup import MyTransformer,PetlArguments,\
+    PromptArguments,BaichuanConfig,BaichuanTokenizer,PetlModel
 
 
 if __name__ == '__main__':
@@ -20,10 +25,10 @@ if __name__ == '__main__':
                                                               tokenizer_class_name=BaichuanTokenizer,)
 
     # 一般根据时间排序选最新的权重文件夹
-    ckpt_dir = './best_ckpt/last'
+    weight_dir = './scripts/best_ckpt/last'
 
-    config = BaichuanConfig.from_pretrained(ckpt_dir)
-    lora_args = PetlArguments.from_pretrained(ckpt_dir)
+    config = BaichuanConfig.from_pretrained(weight_dir)
+    lora_args = PetlArguments.from_pretrained(weight_dir)
 
     assert lora_args.inference_mode == True
 
@@ -39,28 +44,44 @@ if __name__ == '__main__':
                              )
 
     # 加载lora权重
-    pl_model.load_sft_weight(ckpt_dir)
+    pl_model.load_sft_weight(weight_dir)
 
     pl_model.eval().half().cuda()
 
-    enable_merge_weight = False
 
-    if enable_merge_weight:
-        # 合并lora 权重 保存
-        pl_model.save_sft_weight(os.path.join(ckpt_dir, 'pytorch_model_merge.bin'), merge_lora_weight=True)
-    else:
-        model = pl_model.get_llm_model()
 
-        text_list = ["写一个诗歌，关于冬天",
-                     "晚上睡不着应该怎么办",
-                     "从南京到上海的路线",
-                     ]
+    # backbone model replaced PetlModel
+    lora_model: PetlModel = pl_model.backbone
+
+    text_list = [
+        "写一个诗歌，关于冬天",
+        "晚上睡不着应该怎么办",
+    ]
+
+    # 基准模型推理
+    with lora_model.disable_adapter():
         for input in text_list:
+            # lora_model 调用子对象方法
             messages = build_messages(input)
-            generation_config = GenerationConfig(max_new_tokens=512,eos_token_id=config.eos_token_id,
+            generation_config = GenerationConfig(max_new_tokens=512,
+                                                 eos_token_id=config.eos_token_id,
                                                  pad_token_id=config.eos_token_id,
                                                  do_sample=True, top_k=5, top_p=0.85, temperature=0.3,
                                                  repetition_penalty=1.1, )
-            response = model.chat(tokenizer, messages=messages, generation_config=generation_config)
+            response = lora_model.chat(tokenizer, messages=messages, generation_config=generation_config)
             print('input', input)
             print('output', response)
+
+    lora_model.set_adapter(adapter_name='default')
+
+    for input in text_list:
+        # lora_model 调用子对象方法
+        messages = build_messages(input)
+        generation_config = GenerationConfig(max_new_tokens=512,
+                                             eos_token_id=config.eos_token_id,
+                                             pad_token_id=config.eos_token_id,
+                                             do_sample=True, top_k=5, top_p=0.85, temperature=0.3,
+                                             repetition_penalty=1.1, )
+        response = lora_model.chat(tokenizer, messages=messages, generation_config=generation_config)
+        print('input', input)
+        print('output', response)

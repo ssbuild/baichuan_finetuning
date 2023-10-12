@@ -1,8 +1,11 @@
 # @Time    : 2023/4/2 22:49
 # @Author  : tk
 # @FileName: infer
-import typing
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
 
+import typing
 import torch
 from deep_training.data_helper import ModelArguments, DataArguments, TrainingArguments
 from transformers import HfArgumentParser, AutoConfig, GenerationConfig
@@ -21,8 +24,8 @@ if __name__ == '__main__':
     tokenizer, _, _,_= dataHelper.load_tokenizer_and_config(config_class_name=BaichuanConfig,
                                                             tokenizer_class_name=BaichuanTokenizer,)
 
-
-    config = BaichuanConfig.from_pretrained('./best_ckpt')
+    weight_dir = '../scripts/best_ckpt'
+    config = BaichuanConfig.from_pretrained(weight_dir)
     pl_model = MyTransformer(config=config, model_args=model_args,torch_dtype=torch.float16,)
 
     # deepspeed 权重使用转换脚本命令
@@ -30,7 +33,7 @@ if __name__ == '__main__':
     # cd best_ckpt/last
     # python zero_to_fp32.py . ../last.ckpt
 
-    train_weight = './best_ckpt/last.ckpt'
+    train_weight = os.path.join(weight_dir,"last.ckpt")
     pl_model.load_sft_weight(train_weight,strict=True)
 
     # 保存hf权重

@@ -1,6 +1,9 @@
 # @Time    : 2023/1/22 16:22
 # @Author  : tk
 # @FileName: data_utils.py
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
 
 import copy
 import json
@@ -11,12 +14,10 @@ import numpy as np
 import torch
 from deep_training.data_helper import DataHelper, ModelArguments, TrainingArguments, DataArguments, TrainingArgumentsHF, \
     TrainingArgumentsCL, TrainingArgumentsAC
-
 from fastdatasets.record import load_dataset as Loader, RECORD, WriterObject, gfile
 from transformers import PreTrainedTokenizer, HfArgumentParser, PretrainedConfig
 from data_processer import DataStrategy,TokenIdsMaker
 from module_setup import PetlArguments,LoraConfig,PromptArguments,BaichuanConfig,BaichuanTokenizer
-
 from config import *
 
 data_conf = {

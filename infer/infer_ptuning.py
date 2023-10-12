@@ -20,10 +20,9 @@ if __name__ == '__main__':
     dataHelper = NN_DataHelper(model_args)
     tokenizer, _, _, _ = dataHelper.load_tokenizer_and_config(config_class_name=BaichuanConfig,
                                                               tokenizer_class_name=BaichuanTokenizer, )
-
-    train_weight_dir = './best_ckpt/last'
-    config = BaichuanConfig.from_pretrained(train_weight_dir)
-    prompt_args = PromptArguments.from_pretrained(train_weight_dir)
+    weight_dir = './best_ckpt/last'
+    config = BaichuanConfig.from_pretrained(weight_dir)
+    prompt_args = PromptArguments.from_pretrained(weight_dir)
 
     assert prompt_args.inference_mode == True
 
@@ -35,7 +34,7 @@ if __name__ == '__main__':
                              torch_dtype=torch.float16,new_num_tokens=new_num_tokens,
                              )
     # 加载sft权重
-    pl_model.load_sft_weight(train_weight_dir)
+    pl_model.load_sft_weight(weight_dir)
 
     pl_model.eval().half().cuda()
 
