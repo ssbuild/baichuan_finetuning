@@ -1,7 +1,10 @@
 # @Time    : 2023/4/2 22:49
 # @Author  : tk
 # @FileName: infer_ptuning
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
+
 import torch
 from deep_training.data_helper import ModelArguments, DataArguments
 from transformers import HfArgumentParser,AutoConfig
