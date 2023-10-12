@@ -7,6 +7,8 @@ import torch
 import yaml
 from transformers import BitsAndBytesConfig
 from transformers.utils import strtobool
+
+from config.colossalai_config import colossalai_strategy
 from config.constant_map import *
 
 
