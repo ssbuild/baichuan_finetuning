@@ -6,7 +6,7 @@ global_args:
   load_in_bit: 0
   config_merge: {}
   # 模型权重 ， 对应 config.constant_map.py
-  model_name: bloom-560m
+  model_name: Baichuan2-7B-Chat
 
   # one of auto 16 bf16 32
   precision: auto
