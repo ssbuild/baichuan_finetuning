@@ -70,6 +70,10 @@ def patch_args(train_info_args):
     train_info_args.update(train_model_config)
 
 
+    if global_args["trainer_backend"] == "cl":
+        train_info_args["strategy"] = colossalai_strategy[train_info_args["strategy"]]
+
+
     if global_args['quantization_config'] is not None:
         global_args['quantization_config'].load_in_4bit = global_args["load_in_bit"] == 4
         global_args['quantization_config'].load_in_8bit = global_args["load_in_bit"] == 8
