@@ -67,8 +67,8 @@ def main():
                                                                    tokenizer_class_name=BaichuanTokenizer,
                                                                    config_kwargs=config_kwargs)
 
-    with training_args.main_process_first(desc="make_dataset_all"):
-        dataHelper.make_dataset_all()
+    # with training_args.main_process_first(desc="make_dataset_all"):
+    #     dataHelper.make_dataset_all()
 
     is_bf16_supported = torch.cuda.is_bf16_supported()
     precision = global_args["precision"]
@@ -145,7 +145,7 @@ def main():
     train_datasets = None
     if training_args.do_train:
         train_datasets = dataHelper.load_distributed_random_sampler(
-            dataHelper.train_files,
+            dataHelper.load_dataset_files()["train_files"],
             with_load_memory=data_args.data_backend == 'record',
             collate_fn=dataHelper.collate_fn,
             batch_size=training_args.per_device_train_batch_size,
